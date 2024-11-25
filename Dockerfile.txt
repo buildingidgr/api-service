@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies
-RUN npm run prod-install
+RUN npm ci --omit=dev
 
 # Copy the rest of the application code
 COPY . .
@@ -23,7 +23,7 @@ RUN npm run build
 EXPOSE 3000
 
 # Create a start script that runs migrations and starts the app
-RUN echo '#!/bin/sh\nnpx prisma migrate deploy\nnpm start' > /app/start.sh
+RUN echo '#!/bin/sh\nnpx prisma migrate deploy\nnode dist/api-service.js' > /app/start.sh
 RUN chmod +x /app/start.sh
 
 # Start the application using the new start script
