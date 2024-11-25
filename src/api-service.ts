@@ -51,7 +51,7 @@ async function startServer() {
       logger.info(`API Service running on port ${config.port}`);
     });
 
-    // Consume messages from the webhook_events queue
+    // Consume messages from the webhook-events queue
     await setupMessageConsumption();
 
   } catch (error) {
