@@ -9,3 +9,6 @@ healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 
+[deploy.env]
+AUTH_SERVICE_URL = "https://auth.your-domain.com" # Replace with your actual auth service URL
+

@@ -10,5 +10,6 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'default-secret-key',
   databaseUrl: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/database',
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
+  authServiceUrl: process.env.AUTH_SERVICE_URL || 'http://localhost:4000', // Add this line
 } as const;
 
