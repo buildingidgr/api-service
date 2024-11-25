@@ -23,22 +23,23 @@ interface UserData {
 }
 
 interface WebhookEvent {
-  type: string;
   data: {
     data: UserData;
+    type: string;
   };
 }
 
 export class WebhookService {
   async processWebhookEvent(event: WebhookEvent) {
-    logger.info(`Processing webhook event: ${event.type}`, { eventData: JSON.stringify(event) });
+    const eventType = event.data.type;
+    logger.info(`Processing webhook event: ${eventType}`, { eventData: JSON.stringify(event) });
 
-    switch (event.type) {
+    switch (eventType) {
       case 'user.created':
         await this.handleUserCreated(event.data.data);
         break;
       default:
-        logger.warn(`Unhandled webhook event type: ${event.type}`);
+        logger.warn(`Unhandled webhook event type: ${eventType}`);
     }
   }
 
