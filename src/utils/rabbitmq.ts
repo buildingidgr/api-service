@@ -23,7 +23,7 @@ class RabbitMQConnection {
         heartbeat: 30,
       });
       this.channel = await this.connection.createChannel();
-      logger.info('Connected to RabbitMQ');
+      logger.info('Connected to RabbitMQ successfully');
 
       this.connection.on('error', (err) => {
         logger.error('RabbitMQ connection error:', err);
@@ -45,7 +45,7 @@ class RabbitMQConnection {
 
       this.isConnecting = false;
     } catch (error) {
-      logger.error('Error connecting to RabbitMQ:', error);
+      logger.error('Failed to connect to RabbitMQ:', error);
       this.isConnecting = false;
       this.scheduleReconnect();
     }
@@ -86,7 +86,7 @@ class RabbitMQConnection {
           }
         }
       });
-      logger.info(`Consuming messages from queue: ${queue}`);
+      logger.info(`Started consuming messages from queue: ${queue}`);
     } catch (error) {
       logger.error(`Error consuming messages from queue ${queue}:`, error);
       throw error;
@@ -112,7 +112,7 @@ class RabbitMQConnection {
     }
 
     try {
-      await this.channel.checkQueue('webhook-events');
+      await this.channel.checkQueue('user.created');
       return true;
     } catch (error) {
       logger.error('RabbitMQ health check failed:', error);
