@@ -30,5 +30,5 @@ To build and run the Docker image locally:
 
 2. Clone the repository and navigate to the project directory.
 
-3. Generate the package-lock.json file:
+3. Build the Docker image:
 
