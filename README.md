@@ -11,13 +11,24 @@ To deploy this project to Railway, follow these steps:
 2. Create a new project on Railway and connect it to your GitHub repository.
 
 3. In the Railway project settings, add the following environment variables:
-   - `PORT`: 3000 (or your preferred port)
-   - `NODE_ENV`: production
-   - `NEXT_PUBLIC_APP_URL`: Your frontend app URL
-   - `NEXT_PUBLIC_MARKETING_URL`: Your marketing site URL
-   - `JWT_SECRET`: A secure random string for JWT signing
-   - `DATABASE_URL`: Your PostgreSQL database URL (Railway will provide this)
-   - `REDIS_URL`: Your Redis URL (Railway will provide this)
+ - `PORT`: 3000 (or your preferred port)
+ - `NODE_ENV`: production
+ - `NEXT_PUBLIC_APP_URL`: Your frontend app URL
+ - `NEXT_PUBLIC_MARKETING_URL`: Your marketing site URL
+ - `JWT_SECRET`: A secure random string for JWT signing
+ - `DATABASE_URL`: Your PostgreSQL database URL (Railway will provide this)
+ - `REDIS_URL`: Your Redis URL (Railway will provide this)
+ - `RABBITMQ_URL`: Your RabbitMQ URL
 
-4. In the Railway project settings, add the following build command:
+4. Railway will automatically deploy your application when you push changes to your repository.
+
+## Local Development with Docker
+
+To build and run the Docker image locally:
+
+1. Make sure you have Docker installed on your machine.
+
+2. Clone the repository and navigate to the project directory.
+
+3. Build the Docker image:
 
