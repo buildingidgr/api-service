@@ -48,6 +48,37 @@ export class WebhookService {
     }
   }
 
-  // ... (rest of the methods remain unchanged)
+  private async handleUserUpdated(userData: any) {
+    try {
+      const updatedProfile = await profileService.updateProfile(userData.id, {
+        email: userData.email_addresses[0]?.email_address,
+        emailVerified: userData.email_addresses[0]?.verification?.status === 'verified',
+        phoneNumber: userData.phone_numbers[0]?.phone_number,
+        phoneVerified: userData.phone_numbers[0]?.verification?.status === 'verified',
+        username: userData.username,
+        firstName: userData.first_name,
+        lastName: userData.last_name,
+        avatarUrl: userData.image_url,
+        externalAccounts: userData.oauth_accounts?.map((account: any) => ({
+          provider: account.provider,
+          providerId: account.provider_user_id
+        }))
+      });
+      logger.info(`Updated profile for user: ${updatedProfile.id}`);
+    } catch (error) {
+      logger.error('Error handling user.updated event:', error);
+      throw error;
+    }
+  }
+
+  private async handleApiKeyCreated(apiKeyData: any) {
+    try {
+      await profileService.storeApiKey(apiKeyData.userId, apiKeyData.apiKey);
+      logger.info(`Stored API Key for user: ${apiKeyData.userId}`);
+    } catch (error) {
+      logger.error('Error handling api_key.created event:', error);
+      throw error;
+    }
+  }
 }
 

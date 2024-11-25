@@ -5,6 +5,12 @@ import { errorHandler } from './middleware/errorHandler';
 import { validateToken } from './middleware/validateToken';
 import { profileRoutes } from './routes/profileRoutes';
 import { requestLogger } from './middleware/requestLogger';
+import { rabbitmq } from './utils/rabbitmq';
+import { createLogger } from './utils/logger';
+import { WebhookService } from './services/WebhookService';
+
+const logger = createLogger('api-service');
+const webhookService = new WebhookService();
 
 const app = express();
 
@@ -33,7 +39,37 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.listen(config.port, () => {
-  console.log(`API Service running on port ${config.port}`);
+async function startServer() {
+  try {
+    await rabbitmq.connect();
+    
+    app.listen(config.port, () => {
+      logger.info(`API Service running on port ${config.port}`);
+    });
+
+    // Consume messages from the webhook_events queue
+    await rabbitmq.consumeMessages('webhook_events', async (message) => {
+      logger.info('Received webhook event:', message);
+      try {
+        await webhookService.processWebhookEvent(message);
+        logger.info(`Webhook event processed successfully`);
+      } catch (error) {
+        logger.error('Error processing webhook event:', error);
+      }
+    });
+
+  } catch (error) {
+    logger.error('Failed to start the server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM signal received. Closing HTTP server and RabbitMQ connection.');
+  await rabbitmq.close();
+  process.exit(0);
 });
 

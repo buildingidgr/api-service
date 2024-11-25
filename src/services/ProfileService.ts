@@ -53,6 +53,7 @@ export class ProfileService {
           firstName: data.firstName,
           lastName: data.lastName,
           avatarUrl: data.avatarUrl,
+          apiKey: data.apiKey,
           externalAccounts: {
             upsert: data.externalAccounts?.map((account: any) => ({
               where: {
@@ -116,9 +117,7 @@ export class ProfileService {
     try {
       await prisma.profile.update({
         where: { id: userId },
-        data: {
-          apiKey: apiKey
-        }
+        data: { apiKey }
       });
       logger.info(`API Key stored for user: ${userId}`);
     } catch (error) {
