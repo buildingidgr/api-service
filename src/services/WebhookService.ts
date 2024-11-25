@@ -6,7 +6,7 @@ const profileService = new ProfileService();
 
 export class WebhookService {
   async processWebhookEvent(event: any) {
-    logger.info(`Processing webhook event: ${event.type}`);
+    logger.info(`Processing webhook event: ${event.type}`, { eventData: JSON.stringify(event) });
 
     switch (event.type) {
       case 'user.created':
@@ -25,6 +25,7 @@ export class WebhookService {
 
   private async handleUserCreated(userData: any) {
     try {
+      logger.info('Handling user.created event', { userId: userData.id });
       const newProfile = await profileService.createProfile({
         id: userData.id,
         email: userData.email_addresses[0]?.email_address,
@@ -50,6 +51,7 @@ export class WebhookService {
 
   private async handleUserUpdated(userData: any) {
     try {
+      logger.info('Handling user.updated event', { userId: userData.id });
       const updatedProfile = await profileService.updateProfile(userData.id, {
         email: userData.email_addresses[0]?.email_address,
         emailVerified: userData.email_addresses[0]?.verification?.status === 'verified',
@@ -73,6 +75,7 @@ export class WebhookService {
 
   private async handleApiKeyCreated(apiKeyData: any) {
     try {
+      logger.info('Handling api_key.created event', { userId: apiKeyData.userId });
       await profileService.storeApiKey(apiKeyData.userId, apiKeyData.apiKey);
       logger.info(`Stored API Key for user: ${apiKeyData.userId}`);
     } catch (error) {

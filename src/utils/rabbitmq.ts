@@ -20,7 +20,7 @@ class RabbitMQConnection {
 
     try {
       this.connection = await amqp.connect(config.rabbitmqUrl!, {
-        heartbeat: 30, // Reduced heartbeat interval to 30 seconds
+        heartbeat: 30,
       });
       this.channel = await this.connection.createChannel();
       logger.info('Connected to RabbitMQ');
@@ -59,7 +59,7 @@ class RabbitMQConnection {
     this.reconnectTimeout = setTimeout(() => {
       logger.info('Attempting to reconnect to RabbitMQ...');
       this.connect();
-    }, 5000); // Wait 5 seconds before attempting to reconnect
+    }, 5000);
   }
 
   async consumeMessages(queue: string, callback: (message: any) => Promise<void>) {
@@ -69,16 +69,20 @@ class RabbitMQConnection {
 
     try {
       await this.channel.assertQueue(queue, { durable: true });
+      logger.info(`Asserted queue: ${queue}`);
+
       this.channel.consume(queue, async (msg) => {
         if (msg) {
+          logger.info(`Received message from queue ${queue}:`, msg.content.toString());
           try {
             const content = JSON.parse(msg.content.toString());
             await callback(content);
             this.channel?.ack(msg);
+            logger.info(`Acknowledged message from queue ${queue}`);
           } catch (error) {
             logger.error(`Error processing message from queue ${queue}:`, error);
-            // Nack the message and requeue it
             this.channel?.nack(msg, false, true);
+            logger.info(`Nacked and requeued message from queue ${queue}`);
           }
         }
       });
