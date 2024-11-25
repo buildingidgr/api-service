@@ -16,7 +16,7 @@ app.use(cors({
   origin: [
     config.appUrl,
     config.marketingUrl
-  ],
+  ].filter((url): url is string => typeof url === 'string'),
   credentials: true
 }));
 
@@ -32,6 +32,11 @@ app.use(express.json());
 
 // Logging
 app.use(requestLogger);
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 // JWT validation for protected routes
 app.use('/api', validateToken);
