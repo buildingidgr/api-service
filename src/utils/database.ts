@@ -15,13 +15,15 @@ if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma
 }
 
-prisma.$on('query', (e) => {
-  logger.debug('Query: ' + e.query)
-  logger.debug('Params: ' + e.params)
-  logger.debug('Duration: ' + e.duration + 'ms')
+prisma.$use(async (params, next) => {
+  const before = Date.now()
+  const result = await next(params)
+  const after = Date.now()
+  logger.debug(`Query ${params.model}.${params.action} took ${after - before}ms`)
+  return result
 })
 
-process.on('beforeExit', async () => {
-  await prisma.$disconnect()
-})
+// process.on('beforeExit', async () => {
+//   await prisma.$disconnect()
+// })
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node dist/api-service.js",
-    "build": "tsc",
+    "build": "tsc --skipLibCheck",
     "dev": "ts-node-dev src/api-service.ts",
     "generate-lock": "npm install --package-lock-only",
     "predocker-build": "npm run generate-lock",
