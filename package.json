@@ -1,11 +1,14 @@
 {
+  "name": "mechhub-api",
+  "version": "1.0.0",
   "scripts": {
+    "start": "node dist/api-service.js",
+    "build": "tsc",
+    "dev": "ts-node-dev src/api-service.ts",
     "generate-lock": "npm install --package-lock-only",
     "predocker-build": "npm run generate-lock",
     "docker-build": "docker build -t mechhub-api .",
-    "start": "node dist/api-service.js",
-    "build": "tsc",
-    "dev": "ts-node-dev src/api-service.ts"
+    "prod-install": "npm ci --omit=dev"
   },
   "dependencies": {
     "@prisma/client": "^4.14.0",
