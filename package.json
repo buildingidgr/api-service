@@ -8,7 +8,10 @@
     "generate-lock": "npm install --package-lock-only",
     "predocker-build": "npm run generate-lock",
     "docker-build": "docker build -t mechhub-api .",
-    "prod-install": "npm ci --omit=dev"
+    "prod-install": "npm ci --omit=dev",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^4.14.0",
