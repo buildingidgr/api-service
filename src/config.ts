@@ -10,5 +10,8 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET,
   databaseUrl: process.env.DATABASE_URL,
   redisUrl: process.env.REDIS_URL,
+  rabbitmqUrl: process.env.RABBITMQ_URL,
+  railwayEnvironment: process.env.RAILWAY_ENVIRONMENT,
+  railwayProjectId: process.env.RAILWAY_PROJECT_ID,
 } as const;
 
