@@ -3,16 +3,15 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node dist/api-service.js",
-    "build": "tsc --skipLibCheck",
+    "build": "npm run prisma:generate && tsc",
     "dev": "ts-node-dev src/api-service.ts",
     "generate-lock": "npm install --package-lock-only",
     "predocker-build": "npm run generate-lock",
     "docker-build": "docker build -t mechhub-api .",
     "prod-install": "npm ci --omit=dev",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy",
-    "prisma:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "prisma:db:push": "prisma db push",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^4.14.0",
@@ -24,7 +23,8 @@
     "jsonwebtoken": "^9.0.0",
     "prisma": "^4.14.0",
     "redis": "^4.6.6",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "mongodb": "^4.14.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.1",
