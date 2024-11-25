@@ -48,6 +48,16 @@ async function startServer() {
     });
 
     // Consume messages from the webhook_events queue
+    await setupMessageConsumption();
+
+  } catch (error) {
+    logger.error('Failed to start the server:', error);
+    process.exit(1);
+  }
+}
+
+async function setupMessageConsumption() {
+  try {
     await rabbitmq.consumeMessages('webhook_events', async (message: any) => {
       logger.info('Received webhook event:', message);
       try {
@@ -57,10 +67,10 @@ async function startServer() {
         logger.error('Error processing webhook event:', error);
       }
     });
-
   } catch (error) {
-    logger.error('Failed to start the server:', error);
-    process.exit(1);
+    logger.error('Error setting up message consumption:', error);
+    // Attempt to reconnect after a delay
+    setTimeout(setupMessageConsumption, 5000);
   }
 }
 
