@@ -7,6 +7,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
 import { validateToken } from './middleware/validateToken';
 import { routes } from './routes';
+import { prisma } from './utils/database';
 
 const app = express();
 
@@ -47,7 +48,17 @@ app.use('/api', routes);
 // Error handling
 app.use(errorHandler);
 
-app.listen(config.port, () => {
-  console.log(`API Service running on port ${config.port}`);
-});
+async function startServer() {
+  try {
+    await prisma.$connect();
+    app.listen(config.port, () => {
+      console.log(`API Service running on port ${config.port}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
