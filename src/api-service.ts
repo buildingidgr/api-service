@@ -62,7 +62,7 @@ async function startServer() {
 
 async function setupMessageConsumption() {
   try {
-    await rabbitmq.consumeMessages('webhook_events', async (message: any) => {
+    await rabbitmq.consumeMessages('webhook-events', async (message: any) => {
       logger.info('Received webhook event:', message);
       try {
         await webhookService.processWebhookEvent(message);
