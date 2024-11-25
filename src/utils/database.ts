@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { createLogger } from './logger'
+import { config } from '../config'
 
 const logger = createLogger('database');
 
@@ -8,6 +9,11 @@ declare global {
 }
 
 export const prisma = global.prisma || new PrismaClient({
+  datasources: {
+    db: {
+      url: config.databaseUrl,
+    },
+  },
   log: ['query', 'info', 'warn', 'error'],
 });
 
