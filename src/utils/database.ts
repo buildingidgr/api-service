@@ -1,11 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import { config } from '../config';
+import { PrismaClient } from '@prisma/client'
 
-export const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: config.databaseUrl,
-    },
-  },
-});
+const prisma = new PrismaClient()
+
+export { prisma }
 

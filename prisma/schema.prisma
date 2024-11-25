@@ -41,7 +41,6 @@ model ProfilePreference {
   id          String   @id @default(cuid())
   profileId   String   @unique
   profile     Profile  @relation(fields: [profileId], references: [id])
-  // Add any specific preference fields here
 
   @@map("profile_preferences")
 }
