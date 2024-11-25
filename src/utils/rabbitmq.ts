@@ -19,7 +19,36 @@ class RabbitMQConnection {
     }
   }
 
-  // ... (rest of the methods remain unchanged)
+  async consumeMessages(queue: string, callback: (message: any) => Promise<void>) {
+    if (!this.channel) {
+      throw new Error('RabbitMQ channel not initialized');
+    }
+
+    try {
+      await this.channel.assertQueue(queue, { durable: true });
+      this.channel.consume(queue, async (msg) => {
+        if (msg) {
+          const content = JSON.parse(msg.content.toString());
+          await callback(content);
+          this.channel?.ack(msg);
+        }
+      });
+      logger.info(`Consuming messages from queue: ${queue}`);
+    } catch (error) {
+      logger.error(`Error consuming messages from queue ${queue}:`, error);
+      throw error;
+    }
+  }
+
+  async close() {
+    try {
+      await this.channel?.close();
+      await this.connection?.close();
+      logger.info('Closed RabbitMQ connection');
+    } catch (error) {
+      logger.error('Error closing RabbitMQ connection:', error);
+    }
+  }
 }
 
 export const rabbitmq = new RabbitMQConnection();

@@ -48,7 +48,7 @@ async function startServer() {
     });
 
     // Consume messages from the webhook_events queue
-    await rabbitmq.consumeMessages('webhook_events', async (message) => {
+    await rabbitmq.consumeMessages('webhook_events', async (message: any) => {
       logger.info('Received webhook event:', message);
       try {
         await webhookService.processWebhookEvent(message);
