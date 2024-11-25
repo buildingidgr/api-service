@@ -22,10 +22,10 @@ RUN npm run build
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Create a script to run migrations and start the app
+# Create a start script that runs migrations and starts the app
 RUN echo '#!/bin/sh\nnpx prisma migrate deploy\nnpm start' > /app/start.sh
 RUN chmod +x /app/start.sh
 
-# Start the application
+# Start the application using the new start script
 CMD ["/app/start.sh"]
 
