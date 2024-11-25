@@ -1,8 +1,11 @@
 {
   "scripts": {
-    "generate-lock": "ts-node scripts/generate-package-lock.ts",
+    "generate-lock": "npm install --package-lock-only",
     "predocker-build": "npm run generate-lock",
-    "docker-build": "docker build -t mechhub-api ."
+    "docker-build": "docker build -t mechhub-api .",
+    "start": "node dist/api-service.js",
+    "build": "tsc",
+    "dev": "ts-node-dev src/api-service.ts"
   },
   "dependencies": {
     "@prisma/client": "^4.14.0",
