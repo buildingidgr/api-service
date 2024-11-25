@@ -8,6 +8,7 @@ import { requestLogger } from './middleware/requestLogger';
 import { rabbitmq } from './utils/rabbitmq';
 import { createLogger } from './utils/logger';
 import { WebhookService } from './services/WebhookService';
+import { prisma } from './utils/database';
 
 const logger = createLogger('api-service');
 const webhookService = new WebhookService();
@@ -45,13 +46,16 @@ app.get('/health', async (req, res) => {
 
 async function startServer() {
   try {
+    await prisma.$connect();
+    logger.info('Connected to database');
+
     await rabbitmq.connect();
+    logger.info('Connected to RabbitMQ');
     
     app.listen(config.port, () => {
       logger.info(`API Service running on port ${config.port}`);
     });
 
-    // Consume messages from the webhook-events queue
     await setupMessageConsumption();
 
   } catch (error) {
@@ -69,6 +73,7 @@ async function setupMessageConsumption() {
         logger.info(`Webhook event processed successfully`);
       } catch (error) {
         logger.error('Error processing webhook event:', error);
+        // Here you might want to implement a retry mechanism or dead-letter queue
       }
     });
   } catch (error) {
@@ -82,8 +87,9 @@ startServer();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-  logger.info('SIGTERM signal received. Closing HTTP server and RabbitMQ connection.');
+  logger.info('SIGTERM signal received. Closing HTTP server and connections.');
   await rabbitmq.close();
+  await prisma.$disconnect();
   process.exit(0);
 });
 

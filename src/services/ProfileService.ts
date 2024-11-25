@@ -8,16 +8,31 @@ const logger = createLogger('ProfileService');
 export class ProfileService {
   async createProfile(data: any) {
     try {
+      logger.info('Creating new profile', { data });
       const newProfile = await prisma.profile.create({
-        data,
-        include: { externalAccounts: true, preferences: true }
+        data: {
+          id: data.id,
+          email: data.email,
+          emailVerified: data.emailVerified,
+          phoneNumber: data.phoneNumber,
+          phoneVerified: data.phoneVerified,
+          username: data.username,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          avatarUrl: data.avatarUrl,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt
+        },
       });
-
-      logger.info(`Profile created successfully: ${newProfile.id}`);
+      logger.info('Profile created successfully', { profileId: newProfile.id });
       return newProfile;
     } catch (error) {
-      logger.error('Error creating profile:', error);
-      throw new BadRequestError('Failed to create profile');
+      logger.error('Error creating profile', { error });
+      if (error instanceof Error) {
+        throw new BadRequestError(`Failed to create profile: ${error.message}`);
+      } else {
+        throw new BadRequestError('Failed to create profile');
+      }
     }
   }
 

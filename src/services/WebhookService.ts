@@ -34,12 +34,17 @@ export class WebhookService {
     const eventType = event.data.type;
     logger.info(`Processing webhook event: ${eventType}`, { eventData: JSON.stringify(event) });
 
-    switch (eventType) {
-      case 'user.created':
-        await this.handleUserCreated(event.data.data);
-        break;
-      default:
-        logger.warn(`Unhandled webhook event type: ${eventType}`);
+    try {
+      switch (eventType) {
+        case 'user.created':
+          await this.handleUserCreated(event.data.data);
+          break;
+        default:
+          logger.warn(`Unhandled webhook event type: ${eventType}`);
+      }
+    } catch (error) {
+      logger.error('Error processing webhook event', { error, eventType });
+      throw error;
     }
   }
 
