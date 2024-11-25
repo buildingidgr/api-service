@@ -8,32 +8,50 @@ class RabbitMQConnection {
   private connection: amqp.Connection | null = null;
   private channel: amqp.Channel | null = null;
   private reconnectTimeout: NodeJS.Timeout | null = null;
+  private isConnecting: boolean = false;
 
   async connect() {
+    if (this.isConnecting) {
+      logger.info('Connection attempt already in progress');
+      return;
+    }
+
+    this.isConnecting = true;
+
     try {
       this.connection = await amqp.connect(config.rabbitmqUrl!, {
-        heartbeat: 60, // Send a heartbeat every 60 seconds
+        heartbeat: 30, // Reduced heartbeat interval to 30 seconds
       });
       this.channel = await this.connection.createChannel();
       logger.info('Connected to RabbitMQ');
 
       this.connection.on('error', (err) => {
         logger.error('RabbitMQ connection error:', err);
-        this.reconnect();
+        this.scheduleReconnect();
       });
 
       this.connection.on('close', () => {
         logger.warn('RabbitMQ connection closed');
-        this.reconnect();
+        this.scheduleReconnect();
       });
 
+      this.channel.on('error', (err) => {
+        logger.error('RabbitMQ channel error:', err);
+      });
+
+      this.channel.on('close', () => {
+        logger.warn('RabbitMQ channel closed');
+      });
+
+      this.isConnecting = false;
     } catch (error) {
       logger.error('Error connecting to RabbitMQ:', error);
-      this.reconnect();
+      this.isConnecting = false;
+      this.scheduleReconnect();
     }
   }
 
-  private reconnect() {
+  private scheduleReconnect() {
     if (this.reconnectTimeout) {
       clearTimeout(this.reconnectTimeout);
     }
@@ -81,6 +99,20 @@ class RabbitMQConnection {
       logger.info('Closed RabbitMQ connection');
     } catch (error) {
       logger.error('Error closing RabbitMQ connection:', error);
+    }
+  }
+
+  async checkHealth(): Promise<boolean> {
+    if (!this.connection || !this.channel) {
+      return false;
+    }
+
+    try {
+      await this.channel.checkQueue('health_check');
+      return true;
+    } catch (error) {
+      logger.error('RabbitMQ health check failed:', error);
+      return false;
     }
   }
 }

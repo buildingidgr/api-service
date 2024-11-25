@@ -35,8 +35,12 @@ app.use('/api/profiles', profileRoutes);
 app.use(errorHandler);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+app.get('/health', async (req, res) => {
+  const rabbitMQHealth = await rabbitmq.checkHealth();
+  res.json({ 
+    status: 'ok',
+    rabbitMQ: rabbitMQHealth ? 'connected' : 'disconnected'
+  });
 });
 
 async function startServer() {
